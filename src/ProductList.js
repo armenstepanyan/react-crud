@@ -1,13 +1,39 @@
 import React, {Component} from 'react';
-import PropTypes from 'prop-types';
 import products from './mockData';
+import Product from './Product';
 
 class ProductList extends Component {
 
     constructor(props){
         super(props);
-        this.state = {products: []};
+
+        this.state = {
+            products: [],
+            order: 'asc'
+        };
+        this.handleSort = this.handleSort.bind(this);
     }
+
+    dynamicSort(property, type){
+        const sortOrder = type === 'asc' ? -1 : 1;
+
+        return function (a,b) {
+            let result = (a[property] < b[property]) ? -1 : (a[property] > b[property]) ? 1 : 0;
+            return result * sortOrder;
+        }
+    }
+
+    handleSort(column) {
+
+        const list = this.state.products.slice().sort(this.dynamicSort(column, this.state.order));
+
+        this.setState({
+            products: list,
+            order: this.state.order === 'asc' ? 'desc' : 'asc'
+        });
+    }
+
+
 
     componentDidMount(){
         console.log('componentDidMount');
@@ -17,19 +43,22 @@ class ProductList extends Component {
     }
 
     render() {
-        const tbody = this.state.products.map((item, index) => <tr key={index}>
-            <td>{item.id}</td>
-            <td>{item.title}</td>
-            <td>{item.text}</td>
-        </tr>);
+        const tbody = this.state.products.map((item) => <Product key={item.id} product={item}/>);
         return (
             <div className='container'>
                 <table className='table'>
-                    <thead>
+                    <thead className='table-header'>
                     <tr>
-                        <th>ID</th>
-                        <th>Name</th>
-                        <th>Description</th>
+                        <th>
+                           <span onClick={()=>this.handleSort('id')}><i className="fa fa-fw fa-sort" > </i> ID</span>
+                        </th>
+                        <th>
+                            <span onClick={()=>this.handleSort('title')}><i className="fa fa-fw fa-sort" > </i>Title </span>
+                        </th>
+                        <th>
+                            <span onClick={()=>this.handleSort('text')}><i className="fa fa-fw fa-sort" ></i> Text</span>
+                        </th>
+                        <th>#</th>
                     </tr>
                     </thead>
                     <tbody>
