@@ -17,7 +17,6 @@ class ProductList extends Component {
     }
 
     render() {
-
         const tbody = this.state.products.map((item, index) => <tr key={index}>
             <td>{item.id}</td>
             <td>{item.title}</td>
