@@ -1,6 +1,9 @@
 import React, {Component} from 'react';
 import products from './mockData';
 import Product from './Product';
+import {Button, Modal, Header} from 'react-bootstrap/lib';
+import SingleProduct from './SingleProduct';
+
 
 class ProductList extends Component {
 
@@ -9,9 +12,30 @@ class ProductList extends Component {
 
         this.state = {
             products: [],
-            order: 'asc'
+            order: 'asc',
+            show: false,
+            productId: null
         };
+
         this.handleSort = this.handleSort.bind(this);
+        this.handleShow = this.handleShow.bind(this);
+        this.handleClose = this.handleClose.bind(this);
+
+        this.handleToUpdate  = this.handleToUpdate.bind(this);
+
+    }
+
+    handleToUpdate(productID){
+        this.setState({productId: productID});
+        this.handleShow();
+    }
+
+    handleClose() {
+        this.setState({ show: false });
+    }
+
+    handleShow() {
+        this.setState({ show: true });
     }
 
     dynamicSort(property, type){
@@ -32,18 +56,14 @@ class ProductList extends Component {
             order: this.state.order === 'asc' ? 'desc' : 'asc'
         });
     }
-
-
-
     componentDidMount(){
-        console.log('componentDidMount');
        setTimeout(() =>  this.setState({products: products}), 1000);
-
-
     }
 
     render() {
-        const tbody = this.state.products.map((item) => <Product key={item.id} product={item}/>);
+        const tbody = this.state.products.map((item) =>
+            <Product key={item.id} product={item} handleToUpdate = {this.handleToUpdate} />
+        );
         return (
             <div className='container'>
                 <table className='table'>
@@ -65,6 +85,18 @@ class ProductList extends Component {
                     {tbody}
                     </tbody>
                 </table>
+
+                <Modal show={this.state.show} onHide={this.handleClose}>
+                    <Modal.Header closeButton>
+                        <Modal.Title>Modal heading</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                        <SingleProduct productId={this.state.productId}/>
+                    </Modal.Body>
+                    <Modal.Footer>
+                        <Button onClick={this.handleClose}>Close</Button>
+                    </Modal.Footer>
+                </Modal>
             </div>
         )
 
